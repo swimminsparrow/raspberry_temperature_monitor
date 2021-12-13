@@ -1,0 +1,10 @@
+SLEEP_PERIOD_S=30
+EMAIL_EVENT_PERIOD_S=600
+MAX_ALLOWED_TEMP=65.0
+DESTINATION_EMAIL=
+FROM_EMAIL=
+MAX_LOG_FILE_SIZE=1024000
+LOG_DIR=/var/log/rb_temp_monitor/
+LOG_PATH=/var/log/rb_temp_monitor/temperature_monitor.log
+TEMP_DIR_PATH=/tmp/temperature_monitor
+EMAIL_BODY_PATH=/tmp/temperature_monitor/email_body.txt
