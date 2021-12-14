@@ -1,4 +1,4 @@
-Simple Script for monitoring temperature in your raspberry pi. Sends a email when a max temperature is reached. 
+Simple Script for monitoring temperature in your raspberry pi. Sends a email when the max specified temperature is reached. 
 
 You can use it also as a service.
 
