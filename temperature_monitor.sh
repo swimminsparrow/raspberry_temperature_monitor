@@ -1,17 +1,53 @@
 #!/bin/bash
-source config_reader.shlib;
 
-SLEEP_PERIOD_S="$(config_get SLEEP_PERIOD_S)"
-EMAIL_EVENT_PERIOD_S="$(config_get EMAIL_EVENT_PERIOD_S)"
-MAX_ALLOWED_TEMP="$(config_get MAX_ALLOWED_TEMP)"
-DESTINATION_EMAIL="$(config_get DESTINATION_EMAIL)"
-FROM_EMAIL="$(config_get FROM_EMAIL)"
-MAX_LOG_FILE_SIZE="$(config_get MAX_LOG_FILE_SIZE)" #Default max file size is 1 MB
+CONFIG_DIR=$HOME/.config/raspberry_temperature_monitor
 
-LOG_DIR="$(config_get LOG_DIR)"
-LOG_PATH="$(config_get LOG_PATH)"
-TEMP_DIR_PATH="$(config_get TEMP_DIR_PATH)"
-EMAIL_BODY_PATH="$(config_get EMAIL_BODY_PATH)"
+############################################################
+# Help                                                     #
+############################################################
+Help() {
+   echo "Simple Script for monitoring temperature in your raspberry pi. Sends a email when a max temperature is reached."
+   echo
+   echo "Syntax: temperature_monitor [-c|h]"
+   echo "options:"
+   echo "-c [CONFIG_DIR_PATH]        Config file to read"
+   echo "-h                          Print this Help."
+   echo
+}
+
+############################################################
+# Load Configs                                             #
+############################################################
+load_configs() {
+    if [ ! -d "$CONFIG_DIR" ]; then
+	  echo -e "Config dir ${CONFIG_DIR} does not exists!"
+	  exit -1;
+	fi
+    if test -f "$CONFIG_DIR/config.cfg.defaults"; then
+        echo -e "Loading Configs from ${CONFIG_DIR}/config.cfg.defaults"
+        source $CONFIG_DIR/config.cfg.defaults
+    fi
+    if test -f "$CONFIG_DIR/config.cfg"; then
+        echo -e "Loading Configs from ${CONFIG_DIR}/config.cfg"
+        source $CONFIG_DIR/config.cfg
+    fi
+}
+############################################################
+# Parse CLI arguments                                      #
+############################################################
+while getopts ":hc:" option; do
+    case $option in
+       h) # Display help message
+            Help
+            exit;;
+       c) # Config dir
+            CONFIG_DIR=$OPTARG
+            load_configs;;
+      \?) # Invalid option
+            echo "Error: Invalid option"
+            exit;;
+    esac
+done
 
 sendMail(){
 #create necessary folder if not exists
@@ -29,7 +65,7 @@ sendMail(){
 log(){
 	#create log dir if not existing
 	if [ ! -d "$LOG_DIR" ]; then
-	  log "Creating log dir ${LOG_DIR}..."
+	  echo -e "Creating log dir ${LOG_DIR}..."
 	  mkdir  "$LOG_DIR"
 	fi
     currentTimeStamp=$(date)
@@ -107,5 +143,5 @@ main(){
     done
 }
 
-main
 
+main
