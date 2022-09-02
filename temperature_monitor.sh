@@ -66,7 +66,7 @@ log(){
 	#create log dir if not existing
 	if [ ! -d "$LOG_DIR" ]; then
 	  echo -e "Creating log dir ${LOG_DIR}..."
-	  mkdir  "$LOG_DIR"
+	  mkdir -p "$LOG_DIR"
 	fi
     currentTimeStamp=$(date)
     echo -e "${currentTimeStamp}: $1" >> $LOG_PATH

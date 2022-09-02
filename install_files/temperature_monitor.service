@@ -1,0 +1,10 @@
+[Unit]
+Description=Temperature Monitor Service.
+
+[Service]
+Type=simple
+Environment="CONFIG_DIR=-c HOME_DIR/.config/raspberry_temperature_monitor"
+ExecStart=/bin/bash /usr/bin/temperature_monitor.sh $CONFIG_DIR
+
+[Install]
+WantedBy=multi-user.target

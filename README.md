@@ -1,40 +1,33 @@
-Simple Script for monitoring temperature in your raspberry pi. Sends a email when the max specified temperature is reached. 
-
-You can use it also as a service.
-
-
+Simple Temperature Monitor Service for your raspberry pi. Sends a email when the max specified temperature is reached. 
 
 ## Requirements
 
+- "vcgencmd measure_temp" command working on your OS running on Raspberry Pi
+
+
+
+## Installation
+
+The installation script will install temperature monitor as a service running in background and starting automatically on system boot.
+
 ```bash
-sudo apt install bc sendmail
+sudo chmod +x install.sh
+./install.sh
 ```
 
-Create Configs
+The installation will prompt some questions to correctly configure the script. During the installation you will be asked to type the destination email address for the notifications.
+
+Check everything ok after the installation.
 
 ```bash
-mkdir $HOME/.config/temperature_monitor/
-mv config.cfg.defaults $HOME/.config/temperature_monitor/
-```
-
-Create a custom config file
-
-```bash
-sudo nano $HOME/.config/temperature_monitor/config.cfg
-```
-
-With the following content
-
-```bash
-#Destionation mail address to send alerts
-DESTINATION_EMAIL=
-#Sender email ex: raspberry@localdomain
-FROM_EMAIL=
+sudo systemctl status temperature_monitor
 ```
 
 
 
 ## One Time Execution
+
+You can also run the script manually.
 
 ```bash
 sudo chmod +x temperature_monitor.sh
@@ -42,53 +35,4 @@ sudo temperature_monitor.sh -c $HOME/.config/raspberry_temperature_monitor
 ```
 
 
-
-## Keep Running as a Background Service
-
-Give permissions
-
-```bash
-sudo cp temperature_monitor.sh /usr/bin/temperature_monitor.sh
-sudo chmod +x /usr/bin/temperature_monitor.sh
-```
-
-Create a Service
-
-```bash
-sudo nano /etc/systemd/system/temperature_monitor.service
-```
-
-Type the Content  (Replace CONFIG_DIR_PATH with the path to the config directory)
-
-```bash
-[Unit]
-Description=Temperature Monitor Service.
-
-[Service]
-Type=simple
-Environment="CONFIG_DIR=-c CONFIG_DIR_PATH"
-ExecStart=/bin/bash /usr/bin/temperature_monitor.sh $CONFIG_DIR
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Set Permissions to the System Service
-
-```bash
-sudo chmod 644 /etc/systemd/system/temperature_monitor.service
-```
-
-Enable and start the service
-
-```bash
-sudo systemctl enable temperature_monitor
-sudo systemctl start temperature_monitor
-```
-
-Check everything ok
-
-```bash
-sudo systemctl status temperature_monitor
-```
 
