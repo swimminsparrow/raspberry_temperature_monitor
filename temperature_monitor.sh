@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CONFIG_DIR=$HOME/.config/raspberry_temperature_monitor
+VERBOSE=false
 
 ############################################################
 # Help                                                     #
@@ -11,6 +12,7 @@ Help() {
    echo "Syntax: temperature_monitor [-c|h]"
    echo "options:"
    echo "-c [CONFIG_DIR_PATH]        Config file to read"
+   echo "-v                          Enable Verbose Logging"
    echo "-h                          Print this Help."
    echo
 }
@@ -43,6 +45,8 @@ while getopts ":hc:" option; do
        c) # Config dir
             CONFIG_DIR=$OPTARG
             load_configs;;
+       v) # Verbose logging
+            VERBOSE=true;;
       \?) # Invalid option
             echo "Error: Invalid option"
             exit;;
@@ -50,12 +54,6 @@ while getopts ":hc:" option; do
 done
 
 sendMail(){
-#create necessary folder if not exists
-    #mkdir -p $TEMP_DIR_PATH     
-#clear file content
-    #> $EMAIL_BODY_PATH
-#write new content
-    #echo $1 >> $EMAIL_BODY_PATH
 
     echo -e "Subject:$1 \n\n $2" | sendmail -f $FROM_EMAIL $DESTINATION_EMAIL
     
@@ -70,8 +68,9 @@ log(){
 	fi
     currentTimeStamp=$(date)
     echo -e "${currentTimeStamp}: $1" >> $LOG_PATH
-    echo -e "${currentTimeStamp}: $1"
-    #printf "%s" "$1"
+    if [ "$VERBOSE" = true ] ; then
+        echo -e "${currentTimeStamp}: $1"
+    fi    
 }
 
 archiveLogFileIfNecessary(){
