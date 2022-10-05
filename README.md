@@ -31,7 +31,7 @@ You can also run the script manually.
 
 ```bash
 sudo chmod +x temperature_monitor.sh
-sudo temperature_monitor.sh -c $HOME/.config/raspberry_temperature_monitor
+sudo temperature_monitor.sh -c $HOME/.config/raspberry_temperature_monitor -v
 ```
 
 
