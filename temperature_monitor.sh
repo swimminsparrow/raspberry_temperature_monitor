@@ -9,10 +9,10 @@ VERBOSE=false
 Help() {
    echo "Simple Script for monitoring temperature in your raspberry pi. Sends a email when a max temperature is reached."
    echo
-   echo "Syntax: temperature_monitor [-c|h]"
+   echo "Example: temperature_monitor -c [CONFIG_DIR_PATH] OPTIONS"
    echo "options:"
-   echo "-c [CONFIG_DIR_PATH]        Config file to read"
-   echo "-v                          Enable Verbose Logging"
+   echo "-c [CONFIG_DIR_PATH]        Config file to read                DEFAULT: $HOME/.config/raspberry_temperature_monitor"
+   echo "-v                          Enable Verbose Logging             DEFAULT: false"
    echo "-h                          Print this Help."
    echo
 }
@@ -34,24 +34,6 @@ load_configs() {
         source $CONFIG_DIR/config.cfg
     fi
 }
-############################################################
-# Parse CLI arguments                                      #
-############################################################
-while getopts ":hc:" option; do
-    case $option in
-       h) # Display help message
-            Help
-            exit;;
-       c) # Config dir
-            CONFIG_DIR=$OPTARG
-            load_configs;;
-       v) # Verbose logging
-            VERBOSE=true;;
-      \?) # Invalid option
-            echo "Error: Invalid option"
-            exit;;
-    esac
-done
 
 sendMail(){
 
@@ -98,7 +80,7 @@ archiveLogFileIfNecessary(){
     fi
 }
 
-main(){
+monitor(){
     secondsFromLastMailEvent=-1
 
     log "Temperature Monitor service started"
@@ -142,5 +124,33 @@ main(){
     done
 }
 
+main(){
+    load_configs
+    monitor
+}
+
+############################################################
+# Parse CLI arguments                                      #
+############################################################
+while getopts ":hvc:" option; do
+
+    case $option in
+        h) # Display help message
+            Help
+            exit;;
+        c) # Config dir
+            CONFIG_DIR=$OPTARG
+            echo -e "Custom Config Dir ${OPTARG}"
+            ;;
+        v) # Verbose logging
+            echo "Enabling verbose mode"
+            VERBOSE=true
+            ;;
+        \?) # Invalid option
+            echo "Error: Invalid option arg"
+            Help
+            exit;;
+    esac
+done
 
 main
