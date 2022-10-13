@@ -27,7 +27,7 @@ log(){
 }
 
 log "Installing Dependencies..."
-sudo apt install bc sendmail -y
+sudo apt install bc sendmail curl -y
 log "Checking if default configurations exists"
 mkdir -p $CONFIG_DIR
 cp "./config.cfg.defaults" $CONFIG_FILE_DEFAULT

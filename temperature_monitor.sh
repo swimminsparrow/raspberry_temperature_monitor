@@ -42,6 +42,30 @@ sendMail(){
     log "Email Sent to ${DESTINATION_EMAIL}"
 }
 
+sendTelegramMessage(){
+    curl -s "https://api.telegram.org/bot$TELEGRAM_API_KEY/sendMessage?chat_id=$TELEGRAM_CHAT_ID&text=$1"
+    log "Telegram Message Sent to chat id ${TELEGRAM_CHAT_ID}"
+}
+
+############################################################
+# Notify Alert Mail or Telegram on Temperature Warning     #
+### $1: temperature                                      ###  
+############################################################
+notifyTemperatureAlert(){
+    if [ ! -z "$DESTINATION_EMAIL" ] && [ ! -z "$FROM_EMAIL" ]
+    then
+        subject=$"Raspberry Temperature is ${1}"
+        mailBody=$"WARNING! Temperature too high on raspberry pi!\nDATE: ${currentTimeStamp}\nTEMPERATURE: ${temperature} Celsius Degrees"
+        sendMail "$subject" "$mailBody"  
+    fi
+    echo -e $TELEGRAM_CHAT_ID
+    if [ ! -z "$TELEGRAM_API_KEY" ] && [ ! -z "$TELEGRAM_CHAT_ID" ]
+    then
+        message=$"Your Raspberry temperature is too hot: ${1} C"
+        sendTelegramMessage "$message"
+    fi
+}
+
 log(){
 	#create log dir if not existing
 	if [ ! -d "$LOG_DIR" ]; then
@@ -102,9 +126,8 @@ monitor(){
             then
                 log "${secondsFromLastMailEvent} seconds passed from last email event. An alert email will be sent"
                 
-                subject=$"Raspberry Temperature is ${temperature}"
-                mailBody=$"WARNING! Temperature too high on raspberry pi!\nDATE: ${currentTimeStamp}\nTEMPERATURE: ${temperature} Celsius Degrees"
-                sendMail "$subject" "$mailBody"  
+                notifyTemperatureAlert $temperature
+
                 secondsFromLastMailEvent=0
             else
                 log "${secondsFromLastMailEvent} seconds passed from last email event. Waiting for next event if temperature is not freezing..."
